@@ -50,4 +50,4 @@ jobs:
         tag_name: ${{ steps.gitversion.outputs.SemVer }}
         release_name: Release ${{ steps.gitversion.outputs.SemVer }}
     - name: Publish to GitHub packages 
-      run: dotnet nuget push DemoLibrary/DemoLibrary/bin/Release/*.nupkg --api-key ${{ secrets.PACKAGESPATTOKEN }} --source "github"
+      run: dotnet nuget push DemoLibrary/DemoLibrary/bin/Release/*.nupkg --source "github"
