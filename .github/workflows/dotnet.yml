@@ -40,4 +40,5 @@ jobs:
       run: dotnet build DemoLibrary/DemoLibrary/DemoLibrary.csproj
     - name: Pack
       run: dotnet pack DemoLibrary/DemoLibrary/DemoLibrary.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}'
-
+    - name: Publish to GitHub packages 
+      run: dotnet nuget push nugetPackage\*.nupkg --source "github"
