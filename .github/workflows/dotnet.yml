@@ -9,14 +9,35 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest    
+    outputs: # https://stackoverflow.com/questions/59175332/using-output-from-a-previous-job-in-a-new-one-in-a-github-action
+      Version: ${{ steps.gitversion.outputs.SemVer }}
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 #fetch-depth is needed for GitVersion
+    #Install and calculate the new version with GitVersion  
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: 5.x
+
+    - name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      id: gitversion # step id used as reference for output values
+
+    - name: Display GitVersion outputs
+      run: |
+        echo "Version: ${{ steps.gitversion.outputs.SemVer }}"
+        echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.CommitsSinceVersionSource }}"
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
     - name: Build 
       run: dotnet build DemoLibrary/DemoLibrary/DemoLibrary.csproj
+    - name: Pack
+      run: dotnet pack DemoLibrary/DemoLibrary/DemoLibrary.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}'
 
