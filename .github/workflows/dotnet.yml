@@ -10,7 +10,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest    
-    outputs: # https://stackoverflow.com/questions/59175332/using-output-from-a-previous-job-in-a-new-one-in-a-github-action
+    outputs: 
       Version: ${{ steps.gitversion.outputs.SemVer }}
 
     steps:
