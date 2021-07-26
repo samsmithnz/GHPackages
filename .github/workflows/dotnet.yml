@@ -48,6 +48,6 @@ jobs:
         tag_name: ${{ steps.gitversion.outputs.SemVer }}
         release_name: Release ${{ steps.gitversion.outputs.SemVer }}
     - name: Prep packages
-      run: dotnet nuget add source DemoLibrary/DemoLibrary/ --username samsmithnz --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/OWNER/index.json"
+      run: dotnet nuget add source DemoLibrary/DemoLibrary/ --username samsmithnz --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/samsmithnz/index.json"
     - name: Publish to GitHub packages 
       run: dotnet nuget push DemoLibrary/DemoLibrary/bin/Release/*.nupkg --api-key ${{ secrets.PACKAGESPATTOKEN }} --source "github"
