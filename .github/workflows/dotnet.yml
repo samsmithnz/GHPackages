@@ -37,13 +37,13 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Build 
-      run: dotnet build DemoLibrary/DemoLibrary/DemoLibrary.csproj
+      run: dotnet build src/DemoLibrary/DemoLibrary.csproj
     - name: Prep packages
       run: dotnet nuget add source --username samsmithnz --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/samsmithnz/index.json"
     - name: Pack
-      run: dotnet pack DemoLibrary/DemoLibrary/DemoLibrary.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}' -c Release
+      run: dotnet pack src/DemoLibrary/DemoLibrary.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}' -c Release
     - name: Publish to GitHub packages 
-      run: dotnet nuget push DemoLibrary/DemoLibrary/bin/Release/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
+      run: dotnet nuget push src/DemoLibrary/bin/Release/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
       
     #Create release
     - name: Create Release
