@@ -61,6 +61,9 @@ jobs:
           npm install
           npm ci
           npm run build --if-present
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
   release:
     runs-on: ubuntu-latest    
