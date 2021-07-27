@@ -44,8 +44,12 @@ jobs:
         name: nugetPackage
         path: src/DemoLibrary/bin/Release/ 
 
+
   buildNodeJS:
     runs-on: ubuntu-latest
+    permissions: 
+      contents: read
+      packages: write 
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x, 15.x]
@@ -56,6 +60,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: 'https://npm.pkg.github.com'
+          # Defaults to the user or organization that owns the workflow file
+          scope: '@samsmithnz'
       - name: build and publish NPM package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -65,7 +72,8 @@ jobs:
           npm ci
           npm run build --if-present
           npm publish
-          
+     
+     
   release:
     runs-on: ubuntu-latest    
     needs: 
