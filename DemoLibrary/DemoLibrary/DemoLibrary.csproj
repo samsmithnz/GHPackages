@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <RepositoryUrl>https://github.com/samsmithnz/GHPackages</RepositoryUrl>
+    <TargetFramework>net5.0</TargetFramework>    
   </PropertyGroup>
 
 </Project>
