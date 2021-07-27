@@ -47,7 +47,7 @@ jobs:
   release:
     runs-on: ubuntu-latest    
     needs: build
-    if: github.ref == 'refs/heads/main' # only run job if on the main branch   
+    #if: github.ref == 'refs/heads/main' # only run job if on the main branch   
     
     steps:  
     - name: Download nuget package artifact
@@ -57,12 +57,12 @@ jobs:
     - name: Prep packages
       run: dotnet nuget add source --username samsmithnz --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/samsmithnz/index.json"
     - name: Push package to GitHub packages 
-      if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change  
+      #if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change  
       run: dotnet nuget push nugetPackage/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
     
     #Create release
     - name: Create Release
-      if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change
+      #if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
