@@ -47,7 +47,7 @@ jobs:
   release:
     runs-on: ubuntu-latest    
     needs: build
-    if: github.ref == 'refs/heads/main' # only run job if on the main branch   
+    #if: github.ref == 'refs/heads/main' # only run job if on the main branch   
     
     steps:  
     #Push NuGet package to GitHub packages
@@ -63,10 +63,17 @@ jobs:
     
     #Create release
     - name: Create Release
-      if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change
+      if: 1 == 0 #needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
         tag_name: ${{ needs.build.outputs.Version }}
         release_name: Release ${{ needs.build.outputs.Version }}
+    - name: Create Release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ needs.build.outputs.Version }}
+        name: Release ${{ needs.build.outputs.Version }}
+        artifacts: "nugetPackage/*"
+        token: ${{ secrets.GITHUB_TOKEN }}
