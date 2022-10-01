@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  buildDotNet:
     runs-on: ubuntu-latest    
     outputs: 
       Version: ${{ steps.gitversion.outputs.SemVer }}
@@ -37,16 +37,48 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Build and Pack NuGet package
-      run: dotnet pack DemoLibrary/DemoLibrary/DemoLibrary.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}' -c Release
+      run: dotnet pack src/DemoLibrary/DemoLibrary.csproj -p:Version='${{ steps.gitversion.outputs.SemVer }}' -c Release
     - name: Upload NuGet package to GitHub
       uses: actions/upload-artifact@v2
       with:
         name: nugetPackage
-        path: DemoLibrary/DemoLibrary/bin/Release/ 
-        
+        path: src/DemoLibrary/bin/Release/ 
+
+
+  buildNodeJS:
+    runs-on: ubuntu-latest
+    permissions: 
+      contents: read
+      packages: write 
+    strategy:
+      matrix:
+        node-version: [14.x] #[10.x, 12.x, 14.x, 15.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://npm.pkg.github.com'
+          # Defaults to the user or organization that owns the workflow file
+          scope: '@samsmithnz'
+      - name: build and publish NPM package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd src/NodejsWebApp1/
+          npm install
+          npm ci
+          npm run build --if-present
+          npm publish
+     
+     
   release:
     runs-on: ubuntu-latest    
-    needs: build
+    needs: 
+    - buildDotNet
+    - buildNodeJS
     if: github.ref == 'refs/heads/main' # only run job if on the main branch   
     
     steps:  
@@ -68,8 +100,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: ${{ needs.build.outputs.Version }}
-        release_name: Release ${{ needs.build.outputs.Version }}
+        tag_name: ${{ needs.buildDotNet.outputs.Version }}
+        release_name: Release ${{ needs.buildDotNet.outputs.Version }}
     - name: Create Release
       if: needs.build.outputs.CommitsSinceVersionSource > 0 #Only release if there has been a commit/version change
       uses: ncipollo/release-action@v1
